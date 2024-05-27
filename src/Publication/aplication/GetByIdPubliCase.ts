@@ -18,7 +18,8 @@ export default class getByPubliCase {
             kilometraje:result.kilometraje,
             precio:result.precio,
             estado:result.estado,
-            motor:result.motor
+            motor:result.motor,
+            cantidad:result.cantidad
 
         }
         return response

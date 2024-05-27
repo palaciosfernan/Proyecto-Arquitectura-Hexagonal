@@ -8,5 +8,6 @@ export default interface PubliResponse {
     kilometraje:number,
     precio:number,
     estado:string,
-    motor:string
+    motor:string,
+    cantidad:string
 }

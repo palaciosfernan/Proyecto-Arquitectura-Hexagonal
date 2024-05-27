@@ -7,7 +7,8 @@ export default interface PubliRequest {
     color:string,
     kilometraje:number,
     precio:number,
-    motor:string
+    motor:string,
+    cantidad:string
     
 }
 export interface PubliCreateRequest extends PubliRequest{

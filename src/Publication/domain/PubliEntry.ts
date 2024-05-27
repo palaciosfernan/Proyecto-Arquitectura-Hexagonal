@@ -9,6 +9,5 @@ export default interface PubliEntry {
         precio:number,
         estado:string,
         cantidad: string;
-        condicion:string;
         motor:string;
 }

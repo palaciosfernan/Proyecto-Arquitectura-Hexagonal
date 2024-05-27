@@ -5,7 +5,7 @@ export default class CreateControllerPubli{
     constructor (readonly createPubliCase:CreatePubliCase){}
 
     async run (req:Request,res:Response){
-        const{marca,modelo,año,tipodecarroceria,color,kilometraje,precio,estado,motor}=req.body;
+        const{marca,modelo,año,tipodecarroceria,color,kilometraje,precio,estado,motor,cantidad}=req.body;
         
         const publi:PubliCreateRequest={
             marca,
@@ -16,6 +16,7 @@ export default class CreateControllerPubli{
             color,
             kilometraje,
             precio,
+            cantidad,
             estado:estado?? null,
         };
         const result = await this.createPubliCase.run(publi);
