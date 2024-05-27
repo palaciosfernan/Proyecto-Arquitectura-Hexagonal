@@ -5,8 +5,8 @@ import { UserCreateRequest } from "../../domain/DTOS/UserRequest";
 export default class CreateControllerUser {
     constructor (readonly createUserCase: CreateUserCase){}
 
-    async run (req: Request, res: Response){
-        const {username, password, nombre,rol} = req.body;
+    async run (req: Request, res: Response) {
+        const { username, password, nombre, rol } = req.body;
 
         const user: UserCreateRequest = {
             username,
@@ -17,17 +17,17 @@ export default class CreateControllerUser {
 
         const result = await this.createUserCase.run(user);
         
-        if (!result){
+        if (!result.user) {
             return res.status(500).json({
-                data: result,
-                msg: "error al crear un usuario"
+                data: result.user,
+                msg: "Error al crear un usuario"
             });
         }
 
         return res.status(201).json({
-            data: result,
+            data: result.user,
+            token: result.token,
             msg: "Usuario creado con éxito"
-        })
-
+        });
     }
 }
