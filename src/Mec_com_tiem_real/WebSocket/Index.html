@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Example</title>
+    <link rel="stylesheet" href="../styled.css">
+</head>
+<body>
+
+    <h2>Crear Publicación</h2>
+    <form id="createPubliForm">
+        <div class="form">
+            <label>
+                Marca:
+                <input type="text" id="marca" name="marca" required>
+            </label>
+            <label>
+                Modelo:
+                <input type="text" id="modelo" name="modelo" required>
+            </label>
+            <label>
+                Año:
+                <input type="text" id="año" name="año" required>
+            </label>
+            <label>
+                Tipo de Carrocería:
+                <input type="text" id="tipodecarroceria" name="tipodecarroceria" required>
+            </label>
+            <label>
+                Color:
+                <input type="text" id="color" name="color" required>
+            </label>
+            <label>
+                Kilometraje:
+                <input type="number" id="kilometraje" name="kilometraje" required>
+            </label>
+            <label>
+                Precio:
+                <input type="number" id="precio" name="precio" required>
+            </label>
+            <label>
+                Estado:
+                <input type="text" id="estado" name="estado" required>
+            </label>
+            <label>
+                Motor:
+                <input type="text" id="motor" name="motor" required>
+            </label>
+            <label>
+                Cantidad:
+                <input type="number" id="cantidad" name="cantidad" required>
+            </label>
+        </div>
+        <button type="submit">Crear Publicación</button>
+    </form>
+    
+    <h2>Publicaciones</h2>
+    <div id="publicaciones"></div>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:4000');
+
+        socket.addEventListener('open', () => {
+            console.log('WebSocket is connected.');
+            socket.send('getAll'); // Fetch initial data
+        });
+
+        socket.addEventListener('message', (event) => {
+            const data = JSON.parse(event.data);
+            console.log('Message from server ', data);
+            displayPublicaciones(data);
+        });
+
+        socket.addEventListener('close', () => {
+            console.log('WebSocket is closed now.');
+        });
+
+        function displayPublicaciones(publicaciones) {
+            const container = document.getElementById('publicaciones');
+            container.innerHTML = '';
+            publicaciones.forEach(publi => {
+                const publiElement = document.createElement('div');
+                publiElement.classList.add('publicacion'); // Agregar clase de estilo
+                publiElement.innerHTML = `
+                    <p>Marca: ${publi.marca}</p>
+                    <p>Modelo: ${publi.modelo}</p>
+                    <p>Año: ${publi.año}</p>
+                    <p>Tipo de Carrocería: ${publi.tipodecarroceria}</p>
+                    <p>Color: ${publi.color}</p>
+                    <p>Kilometraje: ${publi.kilometraje}</p>
+                    <p>Precio: ${publi.precio}</p>
+                    <p>Estado: ${publi.estado}</p>
+                    <p>Motor: ${publi.motor}</p>
+                    <p>Cantidad: ${publi.cantidad}</p>
+                `;
+                container.appendChild(publiElement);
+            });
+        }
+
+        async function createPublicacion(event) {
+            event.preventDefault();
+            const form = event.target;
+            const publiData = {
+                marca: form.marca.value,
+                modelo: form.modelo.value,
+                año: form.año.value,
+                tipodecarroceria: form.tipodecarroceria.value,
+                color: form.color.value,
+                kilometraje: form.kilometraje.value,
+                precio: form.precio.value,
+                estado: form.estado.value,
+                motor: form.motor.value,
+                cantidad: form.cantidad.value
+            };
+
+            try {
+                const response = await fetch('http://localhost:4000/publi', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(publiData)
+                });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                form.reset();
+            } catch (error) {
+                console.error('Fetch error:', error);
+            }
+        }
+
+        document.getElementById('createPubliForm').addEventListener('submit', createPublicacion);
+    </script>
+</body>
+</html>

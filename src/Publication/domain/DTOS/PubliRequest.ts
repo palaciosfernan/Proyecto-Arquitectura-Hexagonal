@@ -9,7 +9,6 @@ export default interface PubliRequest {
     precio:number,
     motor:string,
     cantidad:string
-    
 }
 export interface PubliCreateRequest extends PubliRequest{
     motor: string;

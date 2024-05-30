@@ -2,6 +2,7 @@ import query from "../../Database/Connection";
 import { PubliCreateRequest } from "../domain/DTOS/PubliRequest";
 import PubliEntry from "../domain/PubliEntry";
 import PubliRepository from "../domain/PubliRepository";
+import PubliResponse from "../domain/DTOS/PubliResponse";
 
 export default class MysqlPubliRepository implements PubliRepository {
     constructor() { }
@@ -53,43 +54,44 @@ export default class MysqlPubliRepository implements PubliRepository {
         }
     }
 
-    async getAll(): Promise<PubliEntry[]> {
+    async getAll(): Promise<PubliResponse[]> {
         const sentence: string = "SELECT * FROM Vehiculos";
-
+    
         try {
-            const entries: any = await query(sentence, []);
-            console.log(entries); // Agrega este log para verificar los datos
-
+            const result: any[] | null = await query(sentence, []);
+            
+            if (result === null) {
+                console.log("La consulta devolvió null.");
+                return [];
+            }
+    
+            const entries: any[] = result[0]; // Ajusta según la estructura de tu respuesta de consulta
+    
             if (!entries || entries.length === 0) {
                 console.log("No se encontraron registros.");
                 return [];
             }
-
-            return entries.map((entry: any) => {
-                if (!entry || typeof entry !== 'object') {
-                    throw new Error('Entrada inválida en la respuesta de la base de datos.');
-                }
-
-                return {
-                    id: entry.id ? entry.id.toString() : '',
-                    marca: entry.marca || '',
-                    motor: entry.motor || '',
-                    modelo: entry.modelo || '',
-                    año: entry.año || '',
-                    tipodecarroceria: entry.tipodecarroceria || '',
-                    color: entry.color || '',
-                    kilometraje: entry.kilometraje || 0,
-                    precio: entry.precio || '0.00',
-                    estado: entry.estado || '',
-                    cantidad: entry.cantidad || 0,
-                };
-            });
+    
+            return entries.map((entry: any) => ({
+                id: entry.id ? entry.id.toString() : '',
+                marca: entry.marca || '',
+                modelo: entry.modelo || '',
+                año: entry.año || '',
+                tipodecarroceria: entry.tipodecarroceria || '',
+                color: entry.color || '',
+                kilometraje: entry.kilometraje || 0,
+                precio: entry.precio.toString() || '0.00',
+                estado: entry.estado || '',
+                motor: entry.motor || '',
+                cantidad: entry.cantidad || 0,
+            })) as PubliResponse[];
         } catch (error) {
             console.log("Ha ocurrido un error durante la consulta.");
             console.error(error);
             return [];
         }
     }
+    
 
     async getById(id: string): Promise<PubliEntry | null> {
         const sentence: string = "SELECT * FROM Vehiculos WHERE id = ?";
